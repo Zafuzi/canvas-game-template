@@ -86,7 +86,8 @@ var sound = {
 // Let's you play songs in a loop
 // Starts at 0.mp3 and will loop until song.length and then repeat 0.mp3
 function playMusic(){
-    sound.main = new Audio('./music/' + sound.current_song + '.mp3');
+    let prefix = "music_"
+    sound.main = new Audio('./music/' + prefix + sound.current_song + '.mp3');
     sound.main.play();
     sound.main.addEventListener('ended', function(){
         sound.current_song += 1;
@@ -109,16 +110,44 @@ function redraw() {
     // Put your redraw functions here
     writeAbout();
     drawGrid();
+    drawEarth();
     requestAnimationFrame(redraw);
+}
+
+let img = new Image;
+    img.src = "./images/earth.png";
+var rot = 0;
+function drawEarth() {
+    rot += .1;
+    let obj = 
+    rotateImg(img, canvas.width/2 - 256/2, canvas.height/2 - 256/2, 256, 256, rot);
+}
+
+function rotateImg(img,x,y,width,height,deg){
+
+    //Convert degrees to radian 
+    var rad = deg * Math.PI / 180;
+
+    //Set the origin to the center of the image
+    ctx.translate(x + width / 2, y + height / 2);
+
+    //Rotate the canvas around the origin
+    ctx.rotate(rad);
+    //draw the object
+    ctx.drawImage(img, width / 2 * (-1),height / 2 * (-1),width,height);
+
+    //reset the canvas  
+    ctx.rotate(rad * ( -1 ) );
+    ctx.translate((x + width / 2) * (-1), (y + height / 2) * (-1));
 }
 
 function writeAbout() {
     ctx.font = "72px sans-serif";
-    ctx.fillStyle = "#777";
+    ctx.fillStyle = "#eee";
     let text = "Canvas Game Template";
     let text_width = ctx.measureText(text).width;
-    let approx_text_height = ctx.measureText("M").width
-    ctx.fillText(text, canvas.width/2 - text_width/2, 72);
+    let approx_text_height = ctx.measureText("M").width;
+    ctx.fillText(text, canvas.width/2 - text_width/2, 60);
 }
 
 function drawGrid () {
@@ -128,7 +157,7 @@ function drawGrid () {
         for(let k = 0; k < grid_size; k++) {
             ctx.beginPath();
             ctx.rect(k*cell_size + canvas.width/2 - (grid_size*cell_size)/2, i*cell_size + canvas.height/2 - (grid_size * cell_size)/2, cell_size, cell_size);
-            ctx.strokeStyle = "#d5d5d5";
+            ctx.strokeStyle = "#eee";
             ctx.lineWidth = 3;
             ctx.stroke();
             ctx.closePath();
