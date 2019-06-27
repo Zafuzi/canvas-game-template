@@ -114,13 +114,20 @@ document.addEventListener("DOMContentLoaded", dcl => {
 
          
 
-    for(var i = 0; i < 50; i++) {
-        for(var k = 0; k < 100; k++) {
+    for(var i = 0; i < 20; i++) {
+        for(var k = 0; k < 20; k++) {
             let s = new Squid();
+				s.startXY = [i*64, k*64];
                 s.src("https://unsplash.it/200/200")
                 .setXY(i * 64, k * 64)
                 .setWidth(64)
                 .setHeight(64)
+				.brain(function() {
+					s.x += 1 * Math.random();
+					s.y += 1 * Math.random();
+					s.x -= 1 * Math.random();
+					s.y -= 1 * Math.random();
+				})
                 .live();
         }
     }
