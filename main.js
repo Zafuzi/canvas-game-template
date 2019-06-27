@@ -18,11 +18,11 @@ var canvasState = {
 
         canvas.addEventListener('mousedown', this.mouseDown);
         canvas.addEventListener('touchstart', this.mouseDown)
-        canvas.addEventListener('mousemove', this.mouseMove);
-        canvas.addEventListener('touchmove', this.mouseMove)
+        //canvas.addEventListener('mousemove', this.mouseMove);
+        //canvas.addEventListener('touchmove', this.mouseMove)
         canvas.addEventListener('mouseup', this.mouseUp);
-        canvas.addEventListener('DOMMouseScroll', this.handleScroll);
-        canvas.addEventListener('mousewheel', this.handleScroll);
+        //canvas.addEventListener('DOMMouseScroll', this.handleScroll);
+        //canvas.addEventListener('mousewheel', this.handleScroll);
     },
     mouseDown: function (evt) {
         document.body.style.mozUserSelect = document.body.style.webkitUserSelect = document.body.style.userSelect = 'none';
@@ -98,88 +98,70 @@ function playMusic(){
 
 function redraw() {
     // Clear the entire canvas
-    var p1 = ctx.transformedPoint(0, 0);
-    var p2 = ctx.transformedPoint(canvas.width, canvas.height);
-    ctx.clearRect(p1.x, p1.y, p2.x - p1.x, p2.y - p1.y);
-
-    ctx.save();
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.restore();
 
+    // draw squids
+    squid_loop();
     // Put your redraw functions here
-    writeAbout();
-    drawGrid();
-    drawEarth();
     requestAnimationFrame(redraw);
 }
-
-let img = new Image;
-    img.src = "./images/earth.png";
-var rot = 0;
-function drawEarth() {
-    rot += .1;
-    let obj = 
-    rotateImg(img, canvas.width/2 - 256/2, canvas.height/2 - 256/2, 256, 256, rot);
-}
-
-function rotateImg(img,x,y,width,height,deg){
-
-    //Convert degrees to radian 
-    var rad = deg * Math.PI / 180;
-
-    //Set the origin to the center of the image
-    ctx.translate(x + width / 2, y + height / 2);
-
-    //Rotate the canvas around the origin
-    ctx.rotate(rad);
-    //draw the object
-    ctx.drawImage(img, width / 2 * (-1),height / 2 * (-1),width,height);
-
-    //reset the canvas  
-    ctx.rotate(rad * ( -1 ) );
-    ctx.translate((x + width / 2) * (-1), (y + height / 2) * (-1));
-}
-
-function writeAbout() {
-    ctx.font = "72px sans-serif";
-    ctx.fillStyle = "#eee";
-    let text = "Canvas Game Template";
-    let text_width = ctx.measureText(text).width;
-    let approx_text_height = ctx.measureText("M").width;
-    ctx.fillText(text, canvas.width/2 - text_width/2, 60);
-}
-
-function drawGrid () {
-    let grid_size = 24;
-    let cell_size = 45;
-    for(let i = 0; i < grid_size; i++) {
-        for(let k = 0; k < grid_size; k++) {
-            ctx.beginPath();
-            ctx.rect(k*cell_size + canvas.width/2 - (grid_size*cell_size)/2, i*cell_size + canvas.height/2 - (grid_size * cell_size)/2, cell_size, cell_size);
-            ctx.strokeStyle = "#eee";
-            ctx.lineWidth = 3;
-            ctx.stroke();
-            ctx.closePath();
-        }
-    }
-    ctx.beginPath();
-    ctx.arc(canvas.width/2, canvas.height/2, 10, 0, 2*Math.PI);
-    ctx.fillStyle = "#777";
-    ctx.fill();
-    ctx.closePath();
-}
-
 
 document.addEventListener("DOMContentLoaded", dcl => {
     // Initiate the canvas and all listeners for clicks, pan, and zoom
     canvasState.init();
     requestAnimationFrame(redraw);
 
+
+         
+
+    for(var i = 0; i < 50; i++) {
+        for(var k = 0; k < 100; k++) {
+            let s = new Squid();
+                s.src("https://unsplash.it/200/200")
+                .setXY(i * 64, k * 64)
+                .setWidth(64)
+                .setHeight(64)
+                .live();
+        }
+    }
+
+    var s = new Squid();
+        s.src("images/earth.png")
+         .setXY(0,0)
+         .setWidth(64)
+         .setHeight(64)
+         .live();
+
+    document.addEventListener("keydown", kd => {
+        let code = kd.keyCode;
+        console.log(code);
+        switch(code) {
+            case 37: // go left
+            case 72:
+            case 65:
+                s.setX(s.x - 64);
+                break;
+            case 38: // go up
+            case 75:
+            case 87:
+                s.setY(s.y - 64);
+                break;
+            case 39: // go right
+            case 76:
+            case 68:
+                s.setX(s.x + 64);
+                break;
+            case 40: // go down
+            case 74:
+            case 83:
+                s.setY(s.y + 64);
+                break;
+        }
+    });
+
     // Start playing first song after user has interacted once with the page
     let p = setInterval(function() {
         if(!sound.clicked) return;
-        playMusic();
         clearInterval(p);
     }, 100);
 })
